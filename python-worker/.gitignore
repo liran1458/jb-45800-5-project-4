@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+.idea/
+.vscode/
+
+# model.pt is intentionally NOT ignored.
+# The assignment requires the trained model to be committed to Git.

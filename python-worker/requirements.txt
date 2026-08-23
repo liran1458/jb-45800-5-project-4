@@ -1,0 +1,7 @@
+torch
+torchvision
+pillow
+boto3
+pika
+pymysql
+python-dotenv
