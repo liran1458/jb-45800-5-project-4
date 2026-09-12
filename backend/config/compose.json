@@ -1,5 +1,11 @@
 {
     "db": {
         "host": "database"
+    },
+    "rabbitmq": {
+        "host": "rabbitmq"
+    },
+    "localstack": {
+        "endpoint": "http://localstack:4566"
     }
 }

@@ -1,17 +1,31 @@
 {
-    "app": {
-        "port": 3000,
-        "name": "",
-        "sync": {
-            "force": false
-        },
-        "encryptionKey": "MySecret"
+  "app": {
+    "port": 3000,
+    "name": "chess-prediction-api",
+    "sync": {
+      "force": false
     },
-    "db": {
-        "host": "localhost",
-        "port": 3306,
-        "username": "root",
-        "password": "",
-        "database": "{change me to the real db name}" 
-    }
+    "encryptionKey": "MySecret"
+  },
+  "db": {
+    "host": "localhost",
+    "port": 3307,
+    "username": "root",
+    "password": "password",
+    "database": "ml_project"
+  },
+  "rabbitmq": {
+    "host": "localhost",
+    "port": 5672,
+    "user": "guest",
+    "password": "guest",
+    "queueName": "prediction_jobs"
+  },
+  "localstack": {
+    "endpoint": "http://localhost:4566",
+    "region": "us-east-1",
+    "accessKeyId": "test",
+    "secretAccessKey": "test",
+    "bucket": "ml-images"
+  }
 }

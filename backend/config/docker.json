@@ -1,5 +1,11 @@
 {
     "db": {
         "host": "host.docker.internal"
+    },
+    "rabbitmq": {
+        "host": "host.docker.internal"
+    },
+    "localstack": {
+        "endpoint": "http://host.docker.internal:4566"
     }
 }

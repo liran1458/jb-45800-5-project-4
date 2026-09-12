@@ -5,30 +5,26 @@ import respondError from './middlewares/error/error-responder'
 import notFound from './middlewares/not-found'
 import cors from 'cors'
 import sequelize from './db/sequelize'
+import predictionRouter from './routers/prediction-router'
 
 
 (async () => {
     const port = config.get<number>('app.port')
     const name = config.get<string>('app.name')
 
-
     const app = express()
 
-    // middlewares
-    app.use('/', cors())
-    app.use('/', json())
+    app.use(cors())
+    app.use(json())
 
-    // load routers here...
+    app.use('/api/predictions', predictionRouter)
 
-    // not found
     app.use('/', notFound)
 
-    // error middlewares
     app.use('/', logError)
     app.use('/', respondError)
 
-    await sequelize.sync({force: !!config.get('app.sync.force')})
+    await sequelize.sync({ force: !!config.get('app.sync.force') })
 
-    // starting the server
     app.listen(port, () => console.log(`app ${name} started on port ${port}....`))
 })()

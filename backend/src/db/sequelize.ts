@@ -1,9 +1,10 @@
 import { Sequelize } from "sequelize-typescript";
 import config from 'config'
+import Prediction from '../models/prediction-model'
 
 const sequelize = new Sequelize({
     dialect: 'mysql',
-    models: [], // <= add all sequelize models here
+    models: [Prediction],
     logging: console.log,
     ...config.get('db')
 })
