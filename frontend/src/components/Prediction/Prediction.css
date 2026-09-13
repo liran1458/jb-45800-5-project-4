@@ -44,6 +44,11 @@ input[type='file'] {
     color: #111827;
 }
 
+input[type='file']:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
 .primary-button,
 .secondary-button {
     border: none;
@@ -69,6 +74,16 @@ input[type='file'] {
 .primary-button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+.loading-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    min-height: 3rem;
+    color: #5b21b6;
+    font-weight: 700;
 }
 
 .primary-button:hover:not(:disabled),

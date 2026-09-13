@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
 import { createPrediction } from '../../Services/PredictionService'
 import type { PredictionModel } from '../../Models/PredictionModel'
+import Spinner from '../Spinner/Spinner'
 import './Prediction.css'
 
 const ACCEPTED_TYPES = ['jpg', 'jpeg', 'png', 'webp', 'avif']
@@ -140,6 +141,7 @@ export default function Prediction() {
                             ref={fileInputRef}
                             id="image-upload"
                             type="file"
+                            disabled={loading}
                             accept=".jpg,.jpeg,.png,.webp,.avif,image/jpeg,image/png,image/webp,image/avif"
                             onChange={handleFileChange}
                         />
@@ -160,9 +162,16 @@ export default function Prediction() {
                     </div>
                 )}
 
-                {!result && (
+                {loading && (
+                    <div className="loading-state" aria-live="polite">
+                        <Spinner label="Predicting" />
+                        <span>Predicting...</span>
+                    </div>
+                )}
+
+                {!result && !loading && (
                     <button type="submit" className="primary-button" disabled={!selectedFile || loading}>
-                        {loading ? 'Predicting...' : 'Predict'}
+                        Predict
                     </button>
                 )}
 
