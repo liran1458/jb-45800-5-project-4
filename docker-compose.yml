@@ -1,0 +1,109 @@
+services:
+  database:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: ml_project
+    volumes:
+      - database-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-ppassword", "--protocol=tcp" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  localstack:
+    image: localstack/localstack:4.4.0
+    environment:
+      SERVICES: s3
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+    volumes:
+      - "./localstack/init:/etc/localstack/init/ready.d"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://localhost:4566/_localstack/health >/dev/null" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.compose
+    environment:
+      NODE_ENV: compose
+    ports:
+      - "3010:3000"
+    depends_on:
+      database:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "node -e \"fetch('http://localhost:3000/').then(() => process.exit(0)).catch(() => process.exit(1))\"" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  python-worker:
+    build:
+      context: ./python-worker
+      dockerfile: Dockerfile
+    environment:
+      QUEUE_NAME: prediction_jobs
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+      DB_HOST: database
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: password
+      DB_NAME: ml_project
+      AWS_ENDPOINT_URL: http://localstack:4566
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      S3_BUCKET: ml-images
+    depends_on:
+      database:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "python -c \"import os; os.kill(1, 0)\"" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.compose
+    ports:
+      - "8080:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  database-data:

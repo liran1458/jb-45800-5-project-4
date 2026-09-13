@@ -1,6 +1,7 @@
 {
     "db": {
-        "host": "database"
+        "host": "database",
+        "port": 3306
     },
     "rabbitmq": {
         "host": "rabbitmq"
